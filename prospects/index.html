@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>全国制服店 営業候補リスト｜BANTEX</title>
+  <meta name="description" content="全国の制服販売店を、公開情報の鮮度、店舗規模の推定、営業しやすさで整理した営業候補一覧です。">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#0a2746">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#results">一覧へ移動</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../" aria-label="制服店専用LINEアプリの紹介ページへ戻る">
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <span>BANTEX 営業リスト</span>
+      </a>
+      <p class="header-note">公開情報を営業判断用に整理</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-inner">
+        <p class="eyebrow">UNIFORM RETAILER PROSPECTS</p>
+        <h1 id="page-title"><span class="phrase">全国の制服店を、</span><span class="phrase">営業しやすい順に。</span></h1>
+        <p class="lead">制服店専用LINEアプリの営業候補を、専門性・公開情報の鮮度・連絡手段・規模感から優先順位付けしています。</p>
+        <p class="caution"><strong>重要：</strong>掲載は営業中の保証ではありません。訪問や架電の前に、公式サイトまたは電話で現況を確認してください。</p>
+      </div>
+    </section>
+
+    <section class="summary-section" aria-labelledby="summary-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">全体像</p>
+            <h2 id="summary-title">全国の候補規模</h2>
+          </div>
+          <p id="updatedAt" class="updated-at">集計中</p>
+        </div>
+        <div class="summary-grid" id="summaryGrid" aria-live="polite"></div>
+        <div class="legend" aria-label="営業優先度の説明">
+          <span><i class="priority-dot priority-s"></i><strong>S</strong> 公式サイトと電話を確認</span>
+          <span><i class="priority-dot priority-a"></i><strong>A</strong> 制服専門店として有望</span>
+          <span><i class="priority-dot priority-b"></i><strong>B</strong> 取扱状況を確認して営業</span>
+          <span><i class="priority-dot priority-c"></i><strong>C</strong> 本部・売場担当の確認が先</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls-section" aria-labelledby="filter-title">
+      <div class="section-inner">
+        <div class="section-heading compact">
+          <div>
+            <p class="section-kicker">絞り込み</p>
+            <h2 id="filter-title">営業先を探す</h2>
+          </div>
+          <button id="resetButton" class="text-button" type="button">条件をリセット</button>
+        </div>
+
+        <form id="filterForm" class="filter-grid" role="search">
+          <label class="field field-wide">
+            <span>店舗名・住所・電話番号</span>
+            <input id="searchInput" type="search" placeholder="例：学生服、豊田市、0565" autocomplete="off">
+          </label>
+          <label class="field">
+            <span>都道府県</span>
+            <select id="prefectureSelect"><option value="">全国</option></select>
+          </label>
+          <label class="field">
+            <span>営業優先度</span>
+            <select id="prioritySelect">
+              <option value="">すべて</option>
+              <option value="S">S：最優先</option>
+              <option value="A">A：優先</option>
+              <option value="B">B：確認後</option>
+              <option value="C">C：低め</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>公開情報の状態</span>
+            <select id="statusSelect">
+              <option value="">すべて</option>
+              <option value="high">公式サイト掲載あり</option>
+              <option value="medium">現行販売店検索に掲載</option>
+              <option value="check">古い掲載・要確認</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>規模感</span>
+            <select id="scaleSelect">
+              <option value="">すべて</option>
+              <option value="specialist">地域専門店</option>
+              <option value="multi">複数拠点候補</option>
+              <option value="local">地域小売店</option>
+              <option value="large">大型小売・百貨店等</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>並び順</span>
+            <select id="sortSelect">
+              <option value="priority">おすすめ順</option>
+              <option value="prefecture">都道府県順</option>
+              <option value="name">店舗名順</option>
+            </select>
+          </label>
+        </form>
+      </div>
+    </section>
+
+    <section id="results" class="results-section" aria-labelledby="results-title">
+      <div class="section-inner">
+        <div class="results-toolbar">
+          <div>
+            <p class="section-kicker">候補一覧</p>
+            <h2 id="results-title"><span id="resultCount">0</span>件</h2>
+          </div>
+          <button id="downloadButton" class="download-button" type="button">絞り込み結果をCSV保存</button>
+        </div>
+
+        <div id="activeFilters" class="active-filters" aria-live="polite"></div>
+        <div id="storeList" class="store-list"></div>
+        <p id="emptyState" class="empty-state" hidden>条件に一致する候補がありません。絞り込み条件を変えてください。</p>
+        <nav id="pagination" class="pagination" aria-label="一覧のページ送り"></nav>
+      </div>
+    </section>
+
+    <section class="method-section" aria-labelledby="method-title">
+      <div class="section-inner method-grid">
+        <div>
+          <p class="section-kicker">判断基準</p>
+          <h2 id="method-title">優先度の見方</h2>
+        </div>
+        <div class="method-copy">
+          <details open>
+            <summary>営業しやすさの採点</summary>
+            <p>制服専門店らしさ、公式またはメーカー掲載の鮮度、電話・公式Webの有無、地域店か大手小売かを合計100点で評価しています。地域の専門店は決裁者へ届きやすいと考え、複数拠点店や大型店は本部確認の手間を加味しています。</p>
+          </details>
+          <details>
+            <summary>「現在営業」の判断</summary>
+            <p>「公式サイト掲載あり」は店舗公式ページ、「現行販売店検索に掲載」はカンコー学生服の公開検索で取得日に掲載を確認したものです。どちらも営業中を保証するものではありません。「古い掲載・要確認」は掲載日の古い福井県の販売店情報で、電話確認を前提にしています。</p>
+          </details>
+          <details>
+            <summary>規模感の推定</summary>
+            <p>店舗名、業態、同系列と考えられる掲載拠点数から「地域専門店」「複数拠点候補」「地域小売店」「大型小売・百貨店等」に分類しています。法人規模や売上高を確認したものではないため、営業前の仮説として使用してください。</p>
+          </details>
+          <details>
+            <summary>主な情報源</summary>
+            <p><a href="https://kanko-gakuseifuku.co.jp/shopinfo/map" target="_blank" rel="noopener noreferrer">カンコー学生服 全国販売店検索</a>、<a href="http://www.yamako8.info/school/" target="_blank" rel="noopener noreferrer">山耕学生服販売店ナビ</a>、香川県内店舗の公式サイトです。各カードの「掲載元」「公式Web」「地図」「営業状況を検索」から確認できます。</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p>株式会社バンテックス｜制服店専用LINEアプリ 営業候補リスト</p>
+      <a href="../">サービス紹介へ戻る</a>
+    </div>
+  </footer>
+
+  <script src="stores.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
