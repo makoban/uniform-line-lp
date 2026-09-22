@@ -64,6 +64,25 @@ img, picture {
   background: #fff;
 }
 
+.line-contact-hotspot {
+  position: absolute;
+  z-index: 2;
+  top: 81%;
+  left: 19.2%;
+  width: 61.6%;
+  height: 10.5%;
+  border-radius: 999px;
+}
+
+.line-contact-hotspot:hover {
+  background: rgba(255, 255, 255, .1);
+}
+
+.line-contact-hotspot:focus-visible {
+  outline: 4px solid #00b900;
+  outline-offset: -4px;
+}
+
 .skip-link {
   position: fixed;
   z-index: 30;
@@ -105,6 +124,13 @@ img, picture {
 
   .visual-block + .visual-block {
     margin-top: 8px;
+  }
+
+  .line-contact-hotspot {
+    top: 83.8%;
+    left: 2.4%;
+    width: 95.2%;
+    height: 8.3%;
   }
 
 }
