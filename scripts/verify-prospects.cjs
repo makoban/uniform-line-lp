@@ -75,11 +75,25 @@ async function verifyBrowser(browserType, browserName) {
 
     const expectedPriorityCount = await page.evaluate(() => String(window.UNIFORM_PROSPECTS.summary.byPriority.S));
     const expectedHomepageCount = await page.evaluate(() => String(window.UNIFORM_PROSPECTS.summary.withOfficialWeb));
+    const expectedSocialCount = await page.evaluate(() => String(window.UNIFORM_PROSPECTS.summary.withSocialLinks));
+    const expectedLineCount = await page.evaluate(() => String(window.UNIFORM_PROSPECTS.summary.withLine));
     await page.selectOption("#prioritySelect", "S");
     await page.waitForFunction((expected) => document.querySelector("#resultCount")?.textContent === expected, expectedPriorityCount);
     const priorityCount = await page.locator("#resultCount").textContent();
     const homepageCoverage = await page.locator("#hpCoverage").textContent();
     const homepageButtons = await page.getByRole("link", { name: "営業先HP", exact: true }).count();
+
+    await page.click("#resetButton");
+    await page.selectOption("#socialSelect", "linked");
+    await page.waitForFunction((expected) => document.querySelector("#resultCount")?.textContent === expected, expectedSocialCount);
+    const socialCount = await page.locator("#resultCount").textContent();
+    const socialCoverage = await page.locator("#snsCoverage").textContent();
+    const socialButtons = await page.getByRole("link", { name: /^(LINE|Instagram|Facebook|X|TikTok|YouTube)$/ }).count();
+
+    await page.click("#resetButton");
+    await page.selectOption("#socialSelect", "LINE");
+    await page.waitForFunction((expected) => document.querySelector("#resultCount")?.textContent === expected, expectedLineCount);
+    const lineCount = await page.locator("#resultCount").textContent();
 
     await page.click("#resetButton");
     await page.selectOption("#statusSelect", "check");
@@ -107,9 +121,10 @@ async function verifyBrowser(browserType, browserName) {
     await page.click("#downloadButton");
     const download = await downloadPromise;
     const downloadName = download.suggestedFilename();
+    const csvHeader = fs.readFileSync(await download.path(), "utf8").split("\r\n", 1)[0];
     const hrefs = await page.locator(".store-card:first-child .card-link").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
     const functionalLayout = await inspectLayout(page);
-    results.push({ browser: browserName, functional: true, expectedPriorityCount, priorityCount, expectedHomepageCount, homepageCoverage, homepageButtons, fallbackHomepageButtons, staleCount, aichiCount, searchCount, downloadName, hrefs, errors, ...functionalLayout });
+    results.push({ browser: browserName, functional: true, expectedPriorityCount, priorityCount, expectedHomepageCount, homepageCoverage, homepageButtons, expectedSocialCount, socialCount, socialCoverage, socialButtons, expectedLineCount, lineCount, fallbackHomepageButtons, staleCount, aichiCount, searchCount, downloadName, csvHeader, hrefs, errors, ...functionalLayout });
     await context.close();
   } finally {
     await browser.close();
@@ -125,7 +140,7 @@ async function verifyBrowser(browserType, browserName) {
   const failures = results.filter((result) =>
     result.errors?.length || result.overlay || result.failures?.length ||
     (!result.functional && (result.status !== 200 || result.count !== "3,177" || result.cards !== 24 || result.scrollWidth > result.clientWidth + 1)) ||
-    (result.functional && (result.priorityCount !== result.expectedPriorityCount || !result.homepageCoverage.includes(result.expectedHomepageCount) || result.homepageButtons < 1 || result.fallbackHomepageButtons < 1 || result.staleCount !== "86" || Number(result.searchCount.replaceAll(",", "")) < 1 || !result.downloadName.endsWith(".csv")))
+    (result.functional && (result.priorityCount !== result.expectedPriorityCount || !result.homepageCoverage.includes(result.expectedHomepageCount) || result.homepageButtons < 1 || result.socialCount !== result.expectedSocialCount || !result.socialCoverage.includes(result.expectedSocialCount) || result.socialButtons < 1 || result.lineCount !== result.expectedLineCount || result.fallbackHomepageButtons < 1 || result.staleCount !== "86" || Number(result.searchCount.replaceAll(",", "")) < 1 || !result.downloadName.endsWith(".csv") || !result.csvHeader.includes("Instagram") || !result.csvHeader.includes("LINE")))
   );
   const report = { baseUrl, outputDir, passed: failures.length === 0, results, failures };
   fs.writeFileSync(path.join(outputDir, "report.json"), JSON.stringify(report, null, 2));

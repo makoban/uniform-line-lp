@@ -35,7 +35,8 @@
     large: "大型小売・百貨店等"
   })[group];
   const stores = dataset.rows.map((row) => {
-    const [priority, score, name, prefecture, municipality, address, telephone, storeType, scaleGroup, rootCount, statusLevel, officialWeb, officialWebStatus, detailUrl, schoolListed, sourcePriority] = row;
+    const [priority, score, name, prefecture, municipality, address, telephone, storeType, scaleGroup, rootCount, statusLevel, officialWeb, officialWebStatus, detailUrl, schoolListed, sourcePriority, socialStatus = "unchecked", socialPairs = []] = row;
+    const socialLinks = socialPairs.map(([platform, url]) => ({ platform, url }));
     const scaleLabel = scaleLabelFor(scaleGroup, rootCount);
     const statusLabel = statusLabels[statusLevel];
     const reason = [
@@ -46,9 +47,9 @@
     ].filter(Boolean).join("。 ");
     return {
       priority, score, name, prefecture, municipality, address, telephone, storeType,
-      scaleGroup, scaleLabel, statusLevel, statusLabel, officialWeb, officialWebStatus, detailUrl,
+      scaleGroup, scaleLabel, statusLevel, statusLabel, officialWeb, officialWebStatus, detailUrl, socialStatus, socialLinks,
       reason, approach: approachFor(priority, scaleGroup),
-      searchText: [name, prefecture, municipality, address, telephone, storeType, scaleLabel, statusLabel]
+      searchText: [name, prefecture, municipality, address, telephone, storeType, scaleLabel, statusLabel, ...socialLinks.map((link) => link.platform)]
         .join(" ").normalize("NFKC").toLocaleLowerCase("ja-JP")
     };
   });
@@ -62,11 +63,13 @@
     prefecture: document.querySelector("#prefectureSelect"),
     priority: document.querySelector("#prioritySelect"),
     status: document.querySelector("#statusSelect"),
+    social: document.querySelector("#socialSelect"),
     scale: document.querySelector("#scaleSelect"),
     sort: document.querySelector("#sortSelect"),
     reset: document.querySelector("#resetButton"),
     download: document.querySelector("#downloadButton"),
     hpCoverage: document.querySelector("#hpCoverage"),
+    snsCoverage: document.querySelector("#snsCoverage"),
     resultCount: document.querySelector("#resultCount"),
     activeFilters: document.querySelector("#activeFilters"),
     list: document.querySelector("#storeList"),
@@ -104,6 +107,8 @@
     elements.summaryGrid.replaceChildren(fragment);
     elements.updatedAt.textContent = `公開情報の取得日：${dataset.retrievedOn.replaceAll("-", ".")}`;
     elements.hpCoverage.textContent = `営業先HPの直接リンク：${number(dataset.summary.withOfficialWeb)}件（到達確認済み ${number(dataset.summary.verifiedOfficialWeb)}件）。直接URLが未掲載の店舗には「HPを検索」を表示します。`;
+    const socialCheckedOn = dataset.socialCheckedAt ? new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", year: "numeric", month: "numeric", day: "numeric" }).format(new Date(dataset.socialCheckedAt)) : "未実施";
+    elements.snsCoverage.textContent = `HP掲載のSNSリンクを確認：${number(dataset.summary.withSocialLinks)}件（LINE ${number(dataset.summary.withLine)}件・Instagram ${number(dataset.summary.withInstagram)}件）。公式HPを確認できた ${number(dataset.summary.socialSitesChecked)}件を対象に調査（${socialCheckedOn}）。HP上にリンクが見つからなかった ${number(dataset.summary.socialLinkNotFound)}件も、SNSがないとは限りません。`;
   }
 
   function setupPrefectures() {
@@ -142,6 +147,7 @@
     appendText(badges, "span", `優先度 ${store.priority}`, "badge badge-priority");
     appendText(badges, "span", store.statusLabel, `badge ${store.statusLevel === "check" ? "badge-check" : "badge-status"}`);
     if (store.officialWeb) appendText(badges, "span", store.officialWebStatus === "verified" ? "HP確認済" : "HP掲載", "badge badge-web");
+    if (store.socialStatus === "linked") appendText(badges, "span", "SNSリンクあり", "badge badge-web");
     top.append(badges);
     appendText(top, "span", `${store.score}点`, "score");
     card.append(top);
@@ -168,6 +174,9 @@
 
     appendText(card, "p", `判断根拠：${store.reason}`, "reason");
     appendText(card, "p", `おすすめ初動：${store.approach}`, "approach");
+    appendText(card, "p", store.socialStatus === "linked"
+      ? `SNS：HPに${[...new Set(store.socialLinks.map((link) => link.platform))].join("・")}のリンク掲載（系列共通の可能性あり）`
+      : store.socialStatus === "no_link" ? "SNS：HP上にアカウントリンクを確認できず（SNSなしとは限りません）" : "SNS：未確認", "social-note");
 
     const links = document.createElement("div");
     links.className = "link-row";
@@ -175,6 +184,8 @@
     const homepageSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(`${store.name} ${store.address} 公式サイト`)}`;
     if (store.officialWeb) links.append(createLink(store.officialWebStatus === "verified" ? "営業先HP" : "HP候補（要確認）", store.officialWeb));
     else links.append(createLink("HPを検索", homepageSearchUrl));
+    store.socialLinks.forEach(({ platform, url }) => links.append(createLink(platform, url)));
+    if (!store.socialLinks.length) links.append(createLink("SNSを検索", `https://www.google.com/search?q=${encodeURIComponent(`${store.name} ${store.address} LINE Instagram 公式`)}`));
     if (store.detailUrl && store.detailUrl !== store.officialWeb) links.append(createLink("掲載元", store.detailUrl));
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${store.name} ${store.address}`)}`;
     const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`${store.name} ${store.address} 営業時間`)}`;
@@ -190,6 +201,7 @@
       prefecture: elements.prefecture.value,
       priority: elements.priority.value,
       status: elements.status.value,
+      social: elements.social.value,
       scale: elements.scale.value,
       sort: elements.sort.value
     };
@@ -202,6 +214,9 @@
       if (filters.prefecture && store.prefecture !== filters.prefecture) return false;
       if (filters.priority && store.priority !== filters.priority) return false;
       if (filters.status && store.statusLevel !== filters.status) return false;
+      if (filters.social === "linked" && store.socialStatus !== "linked") return false;
+      if (["LINE", "Instagram"].includes(filters.social) && !store.socialLinks.some((link) => link.platform === filters.social)) return false;
+      if (["no_link", "unchecked"].includes(filters.social) && store.socialStatus !== filters.social) return false;
       if (filters.scale && store.scaleGroup !== filters.scale) return false;
       return true;
     });
@@ -227,6 +242,7 @@
     if (filters.prefecture) labels.push(filters.prefecture);
     if (filters.priority) labels.push(`優先度${filters.priority}`);
     if (filters.status) labels.push(elements.status.selectedOptions[0].textContent);
+    if (filters.social) labels.push(elements.social.selectedOptions[0].textContent);
     if (filters.scale) labels.push(elements.scale.selectedOptions[0].textContent);
     elements.activeFilters.textContent = labels.length ? `適用中：${labels.join(" / ")}` : "全国・全条件を表示中";
   }
@@ -284,11 +300,14 @@
   }
 
   function downloadCsv() {
-    const headers = ["営業優先度", "点数", "店舗名", "都道府県", "市区町村", "住所", "電話番号", "公開情報状態", "規模感", "店舗区分", "判断根拠", "おすすめ初動", "営業先HP", "HP確認状態", "掲載元", "地図"];
+    const headers = ["営業優先度", "点数", "店舗名", "都道府県", "市区町村", "住所", "電話番号", "公開情報状態", "規模感", "店舗区分", "判断根拠", "おすすめ初動", "営業先HP", "HP確認状態", "SNS確認状態", "LINE", "Instagram", "Facebook", "X", "TikTok", "YouTube", "掲載元", "地図"];
     const rows = state.filtered.map((store) => [
       store.priority, store.score, store.name, store.prefecture, store.municipality, store.address,
       store.telephone, store.statusLabel, store.scaleLabel, store.storeType, store.reason,
-      store.approach, store.officialWeb, store.officialWebStatus === "verified" ? "到達確認済み" : store.officialWeb ? "掲載あり・要確認" : "未掲載", store.detailUrl,
+      store.approach, store.officialWeb, store.officialWebStatus === "verified" ? "到達確認済み" : store.officialWeb ? "掲載あり・要確認" : "未掲載",
+      store.socialStatus === "linked" ? "HPにリンクあり" : store.socialStatus === "no_link" ? "HPにリンク未掲載" : "未確認",
+      ...["LINE", "Instagram", "Facebook", "X", "TikTok", "YouTube"].map((platform) => store.socialLinks.filter((link) => link.platform === platform).map((link) => link.url).join(" ")),
+      store.detailUrl,
       `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${store.name} ${store.address}`)}`
     ]);
     const csv = `\ufeff${[headers, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
@@ -307,7 +326,7 @@
     window.clearTimeout(searchTimer);
     searchTimer = window.setTimeout(filterAndSort, 120);
   });
-  [elements.prefecture, elements.priority, elements.status, elements.scale, elements.sort]
+  [elements.prefecture, elements.priority, elements.status, elements.social, elements.scale, elements.sort]
     .forEach((element) => element.addEventListener("change", filterAndSort));
   elements.form.addEventListener("submit", (event) => event.preventDefault());
   elements.reset.addEventListener("click", () => {

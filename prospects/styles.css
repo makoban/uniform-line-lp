@@ -212,6 +212,15 @@ h3 { margin: 0; color: var(--navy); font-size: 1.13rem; }
   font-size: .84rem;
   line-height: 1.65;
 }
+.sns-coverage {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  color: #184f85;
+  background: #e7f1fb;
+  border-radius: 10px;
+  font-size: .84rem;
+  line-height: 1.65;
+}
 .priority-dot { width: 10px; height: 10px; border-radius: 50%; }
 .priority-s { background: var(--red); }
 .priority-a { background: var(--orange); }
@@ -335,7 +344,8 @@ h3 { margin: 0; color: var(--navy); font-size: 1.13rem; }
 .signal strong { display: block; margin-top: 3px; color: var(--navy); font-size: .85rem; line-height: 1.55; }
 
 .reason,
-.approach {
+.approach,
+.social-note {
   margin: 0;
   font-size: .86rem;
   line-height: 1.7;
@@ -343,6 +353,7 @@ h3 { margin: 0; color: var(--navy); font-size: 1.13rem; }
 }
 .reason { color: var(--muted); }
 .approach { padding: 10px 12px; color: #164d3b; background: var(--green-pale); border-radius: 10px; }
+.social-note { color: #184f85; }
 
 .link-row { margin-top: auto; padding-top: 2px; }
 .card-link {
