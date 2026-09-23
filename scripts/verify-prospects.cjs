@@ -73,9 +73,13 @@ async function verifyBrowser(browserType, browserName) {
     });
     await page.goto(baseUrl, { waitUntil: "networkidle" });
 
+    const expectedPriorityCount = await page.evaluate(() => String(window.UNIFORM_PROSPECTS.summary.byPriority.S));
+    const expectedHomepageCount = await page.evaluate(() => String(window.UNIFORM_PROSPECTS.summary.withOfficialWeb));
     await page.selectOption("#prioritySelect", "S");
-    await page.waitForFunction(() => document.querySelector("#resultCount")?.textContent === "12");
+    await page.waitForFunction((expected) => document.querySelector("#resultCount")?.textContent === expected, expectedPriorityCount);
     const priorityCount = await page.locator("#resultCount").textContent();
+    const homepageCoverage = await page.locator("#hpCoverage").textContent();
+    const homepageButtons = await page.getByRole("link", { name: "営業先HP", exact: true }).count();
 
     await page.click("#resetButton");
     await page.selectOption("#statusSelect", "check");
@@ -93,13 +97,19 @@ async function verifyBrowser(browserType, browserName) {
     const searchCount = await page.locator("#resultCount").textContent();
 
     await page.click("#resetButton");
+    const noHomepageName = await page.evaluate(() => window.UNIFORM_PROSPECTS.rows.find((row) => !row[11])?.[2]);
+    await page.fill("#searchInput", noHomepageName);
+    await page.waitForTimeout(200);
+    const fallbackHomepageButtons = await page.getByRole("link", { name: "HPを検索", exact: true }).count();
+
+    await page.click("#resetButton");
     const downloadPromise = page.waitForEvent("download");
     await page.click("#downloadButton");
     const download = await downloadPromise;
     const downloadName = download.suggestedFilename();
     const hrefs = await page.locator(".store-card:first-child .card-link").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
     const functionalLayout = await inspectLayout(page);
-    results.push({ browser: browserName, functional: true, priorityCount, staleCount, aichiCount, searchCount, downloadName, hrefs, errors, ...functionalLayout });
+    results.push({ browser: browserName, functional: true, expectedPriorityCount, priorityCount, expectedHomepageCount, homepageCoverage, homepageButtons, fallbackHomepageButtons, staleCount, aichiCount, searchCount, downloadName, hrefs, errors, ...functionalLayout });
     await context.close();
   } finally {
     await browser.close();
@@ -115,7 +125,7 @@ async function verifyBrowser(browserType, browserName) {
   const failures = results.filter((result) =>
     result.errors?.length || result.overlay || result.failures?.length ||
     (!result.functional && (result.status !== 200 || result.count !== "3,177" || result.cards !== 24 || result.scrollWidth > result.clientWidth + 1)) ||
-    (result.functional && (result.priorityCount !== "12" || result.staleCount !== "86" || Number(result.searchCount.replaceAll(",", "")) < 1 || !result.downloadName.endsWith(".csv")))
+    (result.functional && (result.priorityCount !== result.expectedPriorityCount || !result.homepageCoverage.includes(result.expectedHomepageCount) || result.homepageButtons < 1 || result.fallbackHomepageButtons < 1 || result.staleCount !== "86" || Number(result.searchCount.replaceAll(",", "")) < 1 || !result.downloadName.endsWith(".csv")))
   );
   const report = { baseUrl, outputDir, passed: failures.length === 0, results, failures };
   fs.writeFileSync(path.join(outputDir, "report.json"), JSON.stringify(report, null, 2));

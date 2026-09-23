@@ -7,9 +7,20 @@ const repoDir = path.dirname(scriptDir);
 const projectDir = path.dirname(repoDir);
 const sourcePath = path.join(projectDir, "outputs", "20260922-national-uniform-shops", "uniform_shop_prospects.json");
 const outputPath = path.join(repoDir, "prospects", "stores.js");
+const officialWebPath = path.join(projectDir, "outputs", "20260922-national-uniform-shops", "official-web-enrichment.json");
 
 const source = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
 const records = source.records;
+const officialWebEntries = fs.existsSync(officialWebPath)
+  ? JSON.parse(fs.readFileSync(officialWebPath, "utf8")).entries || {}
+  : {};
+
+function enrichedOfficialWeb(storeId) {
+  const entry = officialWebEntries[storeId];
+  if (!entry?.url || [404, 410].includes(entry.destinationStatus)) return { url: "", status: "none" };
+  if (entry.destinationError || entry.destinationStatus >= 400) return { url: entry.url, status: "listed" };
+  return { url: entry.destinationUrl || entry.url, status: "verified" };
+}
 
 const genericRoots = new Set(["カンコーショップ", "スクールショップ", "学生服専門店", "学生服の店", "制服専門店"]);
 
@@ -90,7 +101,10 @@ function priorityFor(score) {
 const stores = records.map((record) => {
   const status = statusFor(record);
   const scale = scaleFor(record);
-  const contactPoints = (record.telephone ? 11 : 0) + (record.official_web ? 7 : 0) + (record.detail_url ? 4 : 0);
+  const enrichedWeb = enrichedOfficialWeb(record.store_id);
+  const officialWeb = record.official_web || enrichedWeb.url;
+  const officialWebStatus = record.official_web ? "verified" : enrichedWeb.status;
+  const contactPoints = (record.telephone ? 11 : 0) + (officialWeb ? 7 : 0) + (record.detail_url ? 4 : 0);
   const schoolPoints = record.school_listed === "あり" ? 3 : 0;
   const score = Math.min(100, fitPoints(record) + status.points + scale.points + contactPoints + schoolPoints);
   const priority = priorityFor(score);
@@ -107,7 +121,8 @@ const stores = records.map((record) => {
     rootCount: scale.rootCount,
     statusLevel: status.level,
     schoolListed: record.school_listed === "あり",
-    officialWeb: record.official_web,
+    officialWeb,
+    officialWebStatus,
     detailUrl: record.detail_url,
     sourcePriority: record.priority
   };
@@ -121,6 +136,8 @@ const summary = {
   highPriority: stores.filter((store) => store.priority === "S" || store.priority === "A").length,
   currentlyListed: stores.filter((store) => store.statusLevel !== "check").length,
   withTelephone: stores.filter((store) => store.telephone).length,
+  withOfficialWeb: stores.filter((store) => store.officialWeb).length,
+  verifiedOfficialWeb: stores.filter((store) => store.officialWebStatus === "verified").length,
   byPriority: Object.fromEntries(["S", "A", "B", "C"].map((priority) => [priority, stores.filter((store) => store.priority === priority).length])),
   byScale: Object.fromEntries(["specialist", "multi", "local", "large"].map((group) => [group, stores.filter((store) => store.scaleGroup === group).length]))
 };
@@ -132,7 +149,7 @@ const payload = {
   rows: stores.map((store) => [
     store.priority, store.score, store.name, store.prefecture, store.municipality,
     store.address, store.telephone, store.storeType, store.scaleGroup, store.rootCount,
-    store.statusLevel, store.officialWeb, store.detailUrl, store.schoolListed, store.sourcePriority
+    store.statusLevel, store.officialWeb, store.officialWebStatus, store.detailUrl, store.schoolListed, store.sourcePriority
   ])
 };
 

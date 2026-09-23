@@ -203,6 +203,15 @@ h3 { margin: 0; color: var(--navy); font-size: 1.13rem; }
 }
 
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
+.hp-coverage {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  color: #164d3b;
+  background: var(--green-pale);
+  border-radius: 10px;
+  font-size: .84rem;
+  line-height: 1.65;
+}
 .priority-dot { width: 10px; height: 10px; border-radius: 50%; }
 .priority-s { background: var(--red); }
 .priority-a { background: var(--orange); }
@@ -304,6 +313,7 @@ h3 { margin: 0; color: var(--navy); font-size: 1.13rem; }
 .store-card[data-priority="A"] .badge-priority { background: var(--orange); }
 .store-card[data-priority="B"] .badge-priority { background: var(--blue); }
 .badge-status { color: #146146; background: var(--green-pale); }
+.badge-web { color: #184f85; background: #e7f1fb; }
 .badge-check { color: #8a4c0d; background: #fff4df; }
 .score { color: var(--navy); font-size: .82rem; font-weight: 900; white-space: nowrap; }
 
