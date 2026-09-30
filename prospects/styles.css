@@ -127,6 +127,7 @@ h1 {
 h2 { margin: 0; color: var(--navy); font-size: clamp(1.4rem, 3vw, 2rem); }
 h3 { margin: 0; color: var(--navy); font-size: 1.13rem; }
 .phrase { display: inline-block; max-width: 100%; white-space: nowrap; }
+.keep { display: inline-block; max-width: 100%; white-space: nowrap; }
 .lead {
   max-width: 760px;
   margin: 22px 0 0;
@@ -152,6 +153,15 @@ h3 { margin: 0; color: var(--navy); font-size: 1.13rem; }
 .controls-section,
 .results-section,
 .method-section { padding-block: clamp(36px, 6vw, 72px); }
+.playbook-section { padding-bottom: 36px; }
+.playbook-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.playbook-grid article { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.playbook-grid strong { color: var(--navy); }
+.playbook-grid p { margin: 8px 0 0; font-size: .9rem; line-height: 1.8; text-wrap: pretty; }
+.score-note { color: var(--muted); font-size: .84rem; line-height: 1.8; text-wrap: pretty; }
+.quick-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.quick-filters button { min-width: 0; max-width: 100%; min-height: 44px; padding: 10px 14px; border: 1px solid #aebdca; border-radius: 10px; color: var(--navy); background: #fff; cursor: pointer; font-weight: 700; font-size: .86rem; white-space: nowrap; }
+.quick-filters button:first-child { border-color: var(--green); color: #fff; background: var(--green); }
 .controls-section { padding-top: 0; }
 .results-section { padding-top: 10px; }
 .method-section { background: #eaf0f4; }
@@ -192,6 +202,7 @@ h3 { margin: 0; color: var(--navy); font-size: 1.13rem; }
   line-height: 1;
 }
 .summary-card small { display: block; margin-top: 8px; color: var(--muted); line-height: 1.5; }
+.summary-card small .keep { display: inline-block; color: inherit; font-size: inherit; margin-right: .3em; }
 
 .legend {
   display: flex;
@@ -324,6 +335,7 @@ h3 { margin: 0; color: var(--navy); font-size: 1.13rem; }
 .badge-status { color: #146146; background: var(--green-pale); }
 .badge-web { color: #184f85; background: #e7f1fb; }
 .badge-check { color: #8a4c0d; background: #fff4df; }
+.badge-phase { color: #164d3b; background: #e9f7f1; }
 .score { color: var(--navy); font-size: .82rem; font-weight: 900; white-space: nowrap; }
 
 .store-title { min-width: 0; }
@@ -345,7 +357,9 @@ h3 { margin: 0; color: var(--navy); font-size: 1.13rem; }
 
 .reason,
 .approach,
-.social-note {
+.social-note,
+.sales-hook,
+.group-note {
   margin: 0;
   font-size: .86rem;
   line-height: 1.7;
@@ -354,6 +368,17 @@ h3 { margin: 0; color: var(--navy); font-size: 1.13rem; }
 .reason { color: var(--muted); }
 .approach { padding: 10px 12px; color: #164d3b; background: var(--green-pale); border-radius: 10px; }
 .social-note { color: #184f85; }
+.sales-hook { color: var(--navy); font-weight: 700; }
+.group-note { color: #81520e; padding: 8px 10px; border-radius: 8px; background: #fff4df; }
+.social-date { margin: -9px 0 0; font-size: .75rem; color: var(--muted); }
+.sales-details { min-width: 0; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; background: #f9fbfd; }
+.sales-details summary { padding: 12px; color: var(--blue); font-size: .85rem; font-weight: 700; cursor: pointer; }
+.sales-detail-body { min-width: 0; padding: 0 12px 12px; display: grid; gap: 12px; }
+.sales-detail-body p { min-width: 0; margin: 0; font-size: .84rem; line-height: 1.85; text-wrap: pretty; }
+.opening-script { padding: 10px; border-left: 3px solid var(--green); background: #e9f7f1; }
+.evidence-note { color: #184f85; }
+.qualification-note { color: var(--muted); }
+.sales-detail-body .card-link { justify-self: start; max-width: 100%; }
 
 .link-row { margin-top: auto; padding-top: 2px; }
 .card-link {
@@ -408,6 +433,7 @@ footer { color: #d9e7f2; background: var(--navy); }
   .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .field-wide { grid-column: span 2; }
   .store-list { grid-template-columns: 1fr; }
+  .playbook-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 600px) {

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { STRATEGY, groupKey, makeSalesProfile, rankSalesProfiles, websiteHost } from "./prospect-sales-strategy.mjs";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoDir = path.dirname(scriptDir);
@@ -9,6 +10,7 @@ const sourcePath = path.join(projectDir, "outputs", "20260922-national-uniform-s
 const outputPath = path.join(repoDir, "prospects", "stores.js");
 const officialWebPath = path.join(projectDir, "outputs", "20260922-national-uniform-shops", "official-web-enrichment.json");
 const socialLinksPath = path.join(projectDir, "outputs", "20260922-national-uniform-shops", "social-link-enrichment.json");
+const salesEvidence = JSON.parse(fs.readFileSync(path.join(repoDir, "prospects", "sales-evidence.json"), "utf8"));
 
 const source = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
 const records = source.records;
@@ -89,20 +91,6 @@ function scaleFor(record) {
   return { group: "local", label: "地域小売店候補", points: 9, rootCount };
 }
 
-function fitPoints(record) {
-  if (record.priority === "A") return 40;
-  if (record.store_type === "洋品・衣料店" || record.store_type === "スポーツ店") return 22;
-  if (record.priority === "B") return 17;
-  return 4;
-}
-
-function priorityFor(score) {
-  if (score >= 90) return "S";
-  if (score >= 75) return "A";
-  if (score >= 50) return "B";
-  return "C";
-}
-
 const stores = records.map((record) => {
   const status = statusFor(record);
   const scale = scaleFor(record);
@@ -112,17 +100,14 @@ const stores = records.map((record) => {
   const socialEntry = officialWebStatus === "verified" ? socialEntries[officialWeb] : null;
   const socialLinks = socialEntry?.status === "checked" ? socialEntry.links || [] : [];
   const socialStatus = socialEntry?.status === "checked" ? (socialLinks.length ? "linked" : "no_link") : "unchecked";
-  const contactPoints = (record.telephone ? 11 : 0) + (officialWeb ? 7 : 0) + (record.detail_url ? 4 : 0);
-  const schoolPoints = record.school_listed === "あり" ? 3 : 0;
-  const score = Math.min(100, fitPoints(record) + status.points + scale.points + contactPoints + schoolPoints);
-  const priority = priorityFor(score);
   return {
-    priority,
-    score,
+    id: record.store_id,
+    root: cleanRoot(record.store_name),
     name: record.store_name,
     prefecture: record.prefecture,
     municipality: record.municipality,
     address: record.address,
+    postalCode: record.postal_code || "",
     telephone: record.telephone,
     storeType: record.store_type,
     scaleGroup: scale.group,
@@ -133,12 +118,29 @@ const stores = records.map((record) => {
     officialWebStatus,
     socialStatus,
     socialLinks,
+    socialCheckedAt: socialEntry?.checkedAt || "",
     detailUrl: record.detail_url,
     sourcePriority: record.priority
   };
 });
 
-stores.sort((a, b) => ({ S: 0, A: 1, B: 2, C: 3 })[a.priority] - ({ S: 0, A: 1, B: 2, C: 3 })[b.priority] || b.score - a.score || a.name.localeCompare(b.name, "ja"));
+const companyCounts = new Map();
+stores.forEach((store) => {
+  const key = groupKey(store);
+  companyCounts.set(key, (companyCounts.get(key) || 0) + 1);
+});
+stores.forEach((store) => {
+  const evidence = salesEvidence.entries[websiteHost(store.officialWeb)];
+  store.sales = makeSalesProfile(store, evidence, companyCounts.get(groupKey(store)) || 1);
+  store.priority = store.sales.priority;
+  store.score = store.sales.score;
+  if (evidence?.uniformRetail && store.scaleGroup !== "large") {
+    store.scaleGroup = store.sales.companyCount > 1 ? "multi" : "specialist";
+  }
+  store.rootCount = store.sales.companyCount;
+  if (evidence?.schoolListed) store.schoolListed = true;
+});
+rankSalesProfiles(stores);
 
 const summary = {
   total: stores.length,
@@ -153,6 +155,11 @@ const summary = {
   withInstagram: stores.filter((store) => store.socialLinks.some((link) => link.platform === "Instagram")).length,
   socialSitesChecked: stores.filter((store) => store.socialStatus !== "unchecked").length,
   socialLinkNotFound: stores.filter((store) => store.socialStatus === "no_link").length,
+  pilot: stores.filter((store) => store.sales.phase === "pilot").length,
+  aichi: stores.filter((store) => store.prefecture === "愛知県").length,
+  manuallyReviewed: stores.filter((store) => store.sales.evidence).length,
+  representativeContacts: stores.filter((store) => store.sales.companyRepresentative && store.sales.phase !== "exclude").length,
+  byPhase: Object.fromEntries(Object.keys(STRATEGY.phaseLabels).map((phase) => [phase, stores.filter((store) => store.sales.phase === phase).length])),
   byPriority: Object.fromEntries(["S", "A", "B", "C"].map((priority) => [priority, stores.filter((store) => store.priority === priority).length])),
   byScale: Object.fromEntries(["specialist", "multi", "local", "large"].map((group) => [group, stores.filter((store) => store.scaleGroup === group).length]))
 };
@@ -161,12 +168,18 @@ const payload = {
   retrievedOn: source.retrieved_on,
   generatedAt: new Date().toISOString(),
   socialCheckedAt: socialEnrichment.generatedAt || "",
+  strategy: STRATEGY,
+  salesEvidence,
   summary,
   rows: stores.map((store) => [
     store.priority, store.score, store.name, store.prefecture, store.municipality,
     store.address, store.telephone, store.storeType, store.scaleGroup, store.rootCount,
     store.statusLevel, store.officialWeb, store.officialWebStatus, store.detailUrl, store.schoolListed, store.sourcePriority,
-    store.socialStatus, store.socialLinks.map(({ platform, url }) => [platform, url])
+    store.socialStatus, store.socialLinks.map(({ platform, url }) => [platform, url]),
+    [store.sales.phase, store.sales.method, Object.values(store.sales.scoreParts), store.sales.rawScore,
+      store.sales.companyCount, store.sales.companyRepresentative, store.sales.representativeId, store.sales.pilotRank,
+      salesEvidence.entries[websiteHost(store.officialWeb)] ? websiteHost(store.officialWeb) : ""],
+    store.id, store.postalCode, store.socialCheckedAt
   ])
 };
 

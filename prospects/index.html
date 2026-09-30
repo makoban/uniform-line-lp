@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>全国制服店 営業候補リスト｜BANTEX</title>
-  <meta name="description" content="全国の制服販売店を、公開情報の鮮度、店舗規模の推定、営業しやすさで整理した営業候補一覧です。">
+  <meta name="description" content="全国の制服店の営業優先度、連絡手法、訴求内容と商談の確認事項。愛知県の初回候補からLINE制服屋アプリをご提案。">
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta name="theme-color" content="#0a2746">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260930-2">
 </head>
 <body>
   <a class="skip-link" href="#results">一覧へ移動</a>
@@ -27,7 +27,7 @@
       <div class="hero-inner">
         <p class="eyebrow">UNIFORM RETAILER PROSPECTS</p>
         <h1 id="page-title"><span class="phrase">全国の制服店を、</span><span class="phrase">営業しやすい順に。</span></h1>
-        <p class="lead">制服店専用LINEアプリの営業候補を、専門性・公開情報の鮮度・連絡手段・規模感から優先順位付けしています。</p>
+        <p class="lead"><span class="keep">学年に合わせた買い替え案内、</span><span class="keep">採寸予約・履歴、</span><span class="keep">LINEポイント。</span><span class="keep">店舗の課題に合わせて提案し、</span><span class="keep">愛知県から地域・全国へ広げます。</span></p>
         <p class="caution"><strong>重要：</strong>掲載は営業中の保証ではありません。訪問や架電の前に、公式サイトまたは電話で現況を確認してください。</p>
       </div>
     </section>
@@ -43,13 +43,33 @@
         </div>
         <div class="summary-grid" id="summaryGrid" aria-live="polite"></div>
         <div class="legend" aria-label="営業優先度の説明">
-          <span><i class="priority-dot priority-s"></i><strong>S</strong> 公式サイトと電話を確認</span>
-          <span><i class="priority-dot priority-a"></i><strong>A</strong> 制服専門店として有望</span>
-          <span><i class="priority-dot priority-b"></i><strong>B</strong> 取扱状況を確認して営業</span>
-          <span><i class="priority-dot priority-c"></i><strong>C</strong> 本部・売場担当の確認が先</span>
+          <span><i class="priority-dot priority-s"></i><strong>S</strong> 近隣・LINE掲載・小規模導入候補</span>
+          <span><i class="priority-dot priority-a"></i><strong>A</strong> 地域支援・LINE活用から優先</span>
+          <span><i class="priority-dot priority-b"></i><strong>B</strong> 取扱量・課題を確認</span>
+          <span><i class="priority-dot priority-c"></i><strong>C</strong> 適合確認・本部提案を先行</span>
         </div>
+        <p class="score-note">優先度は初回営業の順番を決める仮説です。成約確率や売上効果を表すものではありません。紙運用・予約の負担・導入意向は商談で確認します。</p>
         <p id="hpCoverage" class="hp-coverage"></p>
         <p id="snsCoverage" class="sns-coverage"></p>
+      </div>
+    </section>
+
+    <section class="playbook-section" aria-labelledby="playbook-title">
+      <div class="section-inner">
+        <p class="section-kicker">営業の進め方</p>
+        <h2 id="playbook-title">紹介・A5チラシから、店名入りデモへ。</h2>
+        <div class="playbook-grid">
+          <article><strong>1. 責任者につながる</strong><p>メーカー・卸・知人の紹介経路を確認。紹介がなければ、A5を郵送して2〜3営業日後に電話。</p></article>
+          <article><strong>2. お店の課題を聞く</strong><p>買い替え案内と予約の管理方法を確認。既に予約システムがあるお店には連携から提案。</p></article>
+          <article><strong>3. 10分の店名入りデモ</strong><p>学年別案内→予約→採寸履歴の順で見せる。最初は1店舗・1〜3校で、範囲と見積を決める。</p></article>
+        </div>
+        <p class="score-note">提案文は商談用の下書きです。「最短2週間」は合意した初期範囲に限り、費用と運用条件を個別に説明します。実績や売上効果は確認できた範囲で伝えます。</p>
+        <div class="quick-filters" aria-label="営業段階をすぐに選ぶ">
+          <button type="button" data-preset="pilot">愛知・初回30候補</button>
+          <button type="button" data-preset="high">全国のS・A</button>
+          <button type="button" data-preset="headquarters">本部提案</button>
+          <button type="button" data-preset="verify">現況確認</button>
+        </div>
       </div>
     </section>
 
@@ -78,8 +98,39 @@
               <option value="">すべて</option>
               <option value="S">S：最優先</option>
               <option value="A">A：優先</option>
+              <option value="high">S・A：優先候補</option>
               <option value="B">B：確認後</option>
-              <option value="C">C：低め</option>
+              <option value="C">C：適合・本部確認</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>営業段階</span>
+            <select id="phaseSelect">
+              <option value="">すべて</option>
+              <option value="pilot">愛知・初回30候補</option>
+              <option value="expand">地域・全国展開</option>
+              <option value="qualify">課題・取扱を確認</option>
+              <option value="headquarters">本部・運営会社へ</option>
+              <option value="verify">現況・連絡先を確認</option>
+              <option value="exclude">既存導入先・新規対象外</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>営業手法</span>
+            <select id="methodSelect">
+              <option value="">すべて</option>
+              <option value="postal">A5郵送→電話</option>
+              <option value="phone">電話→資料・デモ</option>
+              <option value="headquarters">本部窓口の確認</option>
+              <option value="verify">現況の確認</option>
+              <option value="none">新規対象外</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>系列・共通HPの候補</span>
+            <select id="contactSelect">
+              <option value="">全店舗を表示</option>
+              <option value="representative">代表窓口候補のみ</option>
             </select>
           </label>
           <label class="field">
@@ -149,8 +200,16 @@
         </div>
         <div class="method-copy">
           <details open>
-            <summary>営業しやすさの採点</summary>
-            <p>制服専門店らしさ、公式またはメーカー掲載の鮮度、電話・公式Webの有無、地域店か大手小売かを合計100点で評価しています。地域の専門店は決裁者へ届きやすいと考え、複数拠点店や大型店は本部確認の手間を加味しています。</p>
+            <summary>営業優先度の採点と例外</summary>
+            <p>制服店との適合30点、愛知・近隣での支援20点、公式HP上のLINE等20点、小規模導入15点、掲載・連絡先15点の計100点。Sは90点以上かつ制服店候補・LINE掲載・HP到達確認、Aは70点以上、Bは40点以上です。大型売場や6拠点以上の共通運営候補は本部提案を先行してC・49点まで、古い掲載・電話未確認はC・39点まで。既存導入先は新規対象外です。内訳は各店舗の詳細で確認できます。</p>
+          </details>
+          <details>
+            <summary>初回30候補と重複営業の防止</summary>
+            <p>愛知県内で電話があり、現行掲載・5拠点以内・55点以上の専門店等から代表窓口候補を選び、上位30候補を初回対象にしています。名称や共通HPからの系列推定は法人同一性の保証ではありません。実際の運営会社と決裁者を確認し、同じ会社へ重複して連絡しない運用を推奨します。</p>
+          </details>
+          <details>
+            <summary>確認できた事実と提案の区別</summary>
+            <p>一部の愛知県店舗は2026年9月30日に公式HPの取扱校・店舗数・予約導線を追加確認しました。他の掲載・SNS情報には元の取得日を表示します。予約リンクがないことは電話・紙運用の証拠ではありません。各店舗の訴求・質問・電話文は営業仮説であり、課題、予算、会員数、連携可否を商談で確認して提案範囲を決めます。</p>
           </details>
           <details>
             <summary>「現在営業」の判断</summary>
@@ -176,7 +235,7 @@
     </div>
   </footer>
 
-  <script src="stores.js"></script>
-  <script src="app.js"></script>
+  <script src="stores.js?v=20260930-2"></script>
+  <script src="app.js?v=20260930-2"></script>
 </body>
 </html>

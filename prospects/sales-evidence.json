@@ -1,0 +1,61 @@
+{
+  "checkedOn": "2026-09-30",
+  "method": "店舗公式サイトの公開内容を人が確認。商談・購買意向・業務負担は未確認。",
+  "entries": {
+    "maruori.jp": {
+      "uniformRetail": true,
+      "storeCount": 3,
+      "schoolListed": true,
+      "facts": "小学校用品・中学高校制服を扱い、本店・アピタ阿久比店・イオン半田店を掲載。令和9年度中学制服の早割案内あり。",
+      "sourceUrl": "https://www.maruori.jp/"
+    },
+    "nonoyama-y.com": {
+      "uniformRetail": true,
+      "storeCount": 4,
+      "schoolListed": true,
+      "reservationListed": true,
+      "facts": "4店舗を掲載。採寸予約・WEB注文の導線と令和9年度中学校新入学の予約案内あり。",
+      "sourceUrl": "https://www.nonoyama-y.com/"
+    },
+    "uni-box.jp": {
+      "uniformRetail": true,
+      "schoolListed": true,
+      "reservationListed": true,
+      "facts": "小中高校の取扱校、外部の採寸予約リンク、在校生向け追加注文の案内あり。",
+      "sourceUrl": "https://uni-box.jp/"
+    },
+    "itojyu.co.jp": {
+      "uniformRetail": true,
+      "storeCount": 3,
+      "schoolListed": true,
+      "reservationListed": true,
+      "facts": "3店舗・約60校を案内。店舗別の採寸予約とLINE相談の導線あり。",
+      "sourceUrl": "https://www.itojyu.co.jp/"
+    },
+    "marumiya038.com": {
+      "uniformRetail": true,
+      "schoolListed": true,
+      "facts": "学生服・体操服を扱い、採寸データの3年間保管と電話・LINEによる追加注文を案内。",
+      "sourceUrl": "https://marumiya038.com/company"
+    },
+    "fujiya-uniform.com": {
+      "uniformRetail": true,
+      "storeCount": 2,
+      "schoolListed": true,
+      "facts": "岡崎市の2店舗と小中高校の取扱校を掲載。令和9年度中学校新入学セールを案内。",
+      "sourceUrl": "https://fujiya-uniform.com/"
+    },
+    "yamakou-web.com": {
+      "uniformRetail": true,
+      "schoolListed": true,
+      "facts": "名古屋市緑区の学生服専門店。小学生・中学生・高校生向けの案内と高校名の掲載あり。",
+      "sourceUrl": "https://yamakou-web.com/"
+    },
+    "yyamazaki.co.jp": {
+      "uniformRetail": true,
+      "mixedBusiness": true,
+      "facts": "呉服・振袖等と併せて学生服・学校用品・卒業式レンタルを案内。制服部門の規模は未確認。",
+      "sourceUrl": "https://yyamazaki.co.jp/"
+    }
+  }
+}
