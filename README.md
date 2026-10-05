@@ -1,11 +1,19 @@
-# 制服店専用LINEアプリ
+# 全国制服屋専門DXサービス
 
-制服店向けLINEアプリの営業用ランディングページです。
+制服屋さんが考えた、全国の制服店向けDXサービスの営業用ランディングページです。売上アップ（LINE会員通知・HP/SNS刷新・EC新設）、コスト削減（採寸記録のデジタル化・見積書作成/印刷）、人材採用（SNS連携）を、導入後も伴走して支援する内容です。
 
 - 公開ページ: https://makoban.github.io/uniform-line-lp/
 - 営業候補一覧: https://makoban.github.io/uniform-line-lp/prospects/
+- BANTEX公式サイト: https://bantex.jp/ （ページ下部のボタンから別タブで開く）
+- BANTEX公式LINE: https://lin.ee/nOxm8hI （ユーザー提供QRと一致）
+- B5両面チラシ: https://makoban.github.io/uniform-line-lp/uniform-dx-b5.pdf （Instagram連携v4版）
+- 表示価格: 30万円〜（税別）。対応範囲・運用費は個別お見積り。全機能が一律に含まれるという意味ではありません。
 - PC・スマートフォン別の生成画像をレスポンシブ配信
 - 検索エンジンの登録対象外とする `noindex` 設定
+
+アプリ画面は架空データによるデモです。チラシのLINE販売通知とInstagram投稿は配信・投稿イメージで、実配信済みの画面ではありません。連携は初期設定と個別設計を前提とします。今回のLP公開は、アプリの本番機能、LINE設定、Instagram投稿、BASEやAirレジの連携状態を変更しません。
+
+チラシPDFはJIS B5（182×257mm）の2ページ・RGB確認版です。生成原画は約147ppiで、印刷会社へのPDF/X、CMYK、塗り足しやトンボを検証済みの入稿データではありません。
 
 ## 営業候補一覧の更新
 
