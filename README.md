@@ -5,8 +5,8 @@
 - 公開ページ: https://makoban.github.io/uniform-line-lp/
 - 営業候補一覧: https://makoban.github.io/uniform-line-lp/prospects/
 - BANTEX公式サイト: https://bantex.jp/ （ページ下部のボタンから別タブで開く）
-- BANTEX公式LINE: https://lin.ee/nOxm8hI （ユーザー提供QRと一致）
-- B5両面チラシ: https://makoban.github.io/uniform-line-lp/uniform-dx-b5.pdf （Instagram連携v4版）
+- 制服店専用LINE: https://lin.ee/UdEpkfX （ユーザー提供QRと一致）
+- B5両面チラシ: https://makoban.github.io/uniform-line-lp/uniform-dx-b5.pdf （専用LINE窓口・2026-10-21 v4版）
 - 表示価格: 30万円〜（税別）。対応範囲・運用費は個別お見積り。全機能が一律に含まれるという意味ではありません。
 - PC・スマートフォン別の生成画像をレスポンシブ配信
 - 検索エンジンの登録対象外とする `noindex` 設定
